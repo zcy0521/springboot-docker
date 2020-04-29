@@ -76,3 +76,41 @@ docker-compose up -d
 
 http://localhost:8081
 http://localhost:8082
+
+## Nginx代理
+
+- 新建配置文件
+
+```shell script
+nano [DOMAIN_NAME].conf
+upstream [APP_NAME] {
+    server host.docker.internal:[TOMCAT_PORT];
+    server host.docker.internal:[TOMCAT_PORT];
+}
+
+server {
+    listen       [NGINX_PORT];
+    server_name  [DOMAIN_NAME];
+
+    location / {
+        proxy_pass http://[APP_NAME];
+    }
+}
+```
+
+- 重启nginx
+
+```shell script
+cp app.conf nginx-docker/conf.d
+docker restart nginx
+```
+
+- 修改`hosts`
+
+```
+127.0.0.1 [DOMAIN_NAME]
+```
+
+- 访问
+
+http://DOMAIN_NAME
